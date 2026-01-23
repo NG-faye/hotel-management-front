@@ -12,7 +12,7 @@ const Dashboard = () => {
       try {
         const token = localStorage.getItem('token'); // Récupère le jeton du login
         
-        const response = await axios.get('http://127.0.0.1:8000/api/hotels/', {
+        const response = await axios.get('https://hotel-management-backend-ommj.onrender.com/api/hotels/', {
           headers: {
             'Authorization': `Bearer ${token}` // On envoie le jeton pour déverrouiller l'accès
           }
@@ -44,7 +44,7 @@ const Dashboard = () => {
         {/* 3. Ici, on utilise hotelCount au lieu de "40" */}
         <StatCard 
           icon={FileText} 
-          count={hotelCount.toString()} 
+         count={hotelCount > 0 ? hotelCount.toString() : "Chargement..."} 
           label="Hôtels" 
           subtext="Hôtels enregistrés" 
           bgColor="bg-yellow-100" 

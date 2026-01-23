@@ -2,7 +2,7 @@ import React from 'react';
 import { Edit, Trash2 } from 'lucide-react';
 
 const HotelCard = ({ image, address, name, price_per_night, onEdit, onDelete }) => {
-  const API_URL = "http://127.0.0.1:8000";
+ const API_URL = "https://hotel-management-backend-ommj.onrender.com";
 
   const imageUrl = image?.startsWith('http') 
     ? image 

@@ -11,7 +11,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://127.0.0.1:8000/api/register/', {
+      await axios.post('https://hotel-management-backend-ommj.onrender.com/api/register/', {
         username: email,
         email: email,
         password: password,

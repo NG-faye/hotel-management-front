@@ -4,6 +4,9 @@ import axios from 'axios';
 import { Plus, Image as ImageIcon, X } from 'lucide-react';
 import HotelCard from '../../components/HotelCard';
 
+// URL de ton backend sur Render
+const BASE_URL = "https://hotel-management-backend-ommj.onrender.com";
+
 const Hotels = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -14,10 +17,11 @@ const Hotels = () => {
     name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null
   });
 
+  // Charger les hôtels depuis Render
   const fetchHotels = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://127.0.0.1:8000/api/hotels/', {
+      const response = await axios.get(`${BASE_URL}/api/hotels/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setHotels(response.data);
@@ -28,11 +32,12 @@ const Hotels = () => {
 
   useEffect(() => { fetchHotels(); }, []);
 
+  // Supprimer un hôtel
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer cet hôtel ?")) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://127.0.0.1:8000/api/hotels/${id}/`, {
+        await axios.delete(`${BASE_URL}/api/hotels/${id}/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         fetchHotels();
@@ -62,6 +67,7 @@ const Hotels = () => {
     setFormData({ name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null });
   };
 
+  // Créer ou Modifier un hôtel
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -75,15 +81,18 @@ const Hotels = () => {
     if (formData.image) data.append('image', formData.image);
 
     try {
+      const config = {
+        headers: { 
+          'Authorization': `Bearer ${token}`, 
+          'Content-Type': 'multipart/form-data' 
+        }
+      };
+
       if (editingId) {
-        await axios.patch(`http://127.0.0.1:8000/api/hotels/${editingId}/`, data, {
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-        });
+        await axios.patch(`${BASE_URL}/api/hotels/${editingId}/`, data, config);
         alert("Hôtel mis à jour !");
       } else {
-        await axios.post('http://127.0.0.1:8000/api/hotels/', data, {
-          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-        });
+        await axios.post(`${BASE_URL}/api/hotels/`, data, config);
         alert("Hôtel créé !");
       }
       closeAndReset();
@@ -132,32 +141,26 @@ const Hotels = () => {
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* NOM */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Nom de l'hôtel</label>
                   <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required placeholder="Le Grand Hotel" />
                 </div>
-                {/* ADRESSE */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Adresse</label>
                   <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} required placeholder="Dakar, Plateau" />
                 </div>
-                {/* EMAIL */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">E-mail</label>
                   <input type="email" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required placeholder="hotel@mail.com" />
                 </div>
-                {/* TÉLÉPHONE */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Numéro de téléphone</label>
                   <input type="tel" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required placeholder="+221 ..." />
                 </div>
-                {/* PRIX */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Prix par nuit</label>
                   <input type="number" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.price_per_night} onChange={(e) => setFormData({...formData, price_per_night: e.target.value})} required />
                 </div>
-                {/* DEVISE */}
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Devise</label>
                   <select className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.currency} onChange={(e) => setFormData({...formData, currency: e.target.value})}>
@@ -168,7 +171,6 @@ const Hotels = () => {
                 </div>
               </div>
 
-              {/* IMAGE */}
               <div className="space-y-1 pt-2">
                 <label className="text-sm font-medium text-gray-700">Ajouter une photo</label>
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center hover:border-gray-400 transition-colors cursor-pointer relative">
