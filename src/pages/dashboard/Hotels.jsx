@@ -4,20 +4,21 @@ import axios from 'axios';
 import { Plus, Image as ImageIcon, X } from 'lucide-react';
 import HotelCard from '../../components/HotelCard';
 
-// URL de ton backend sur Render
 const BASE_URL = "https://hotel-management-backend-ommj.onrender.com";
 
 const Hotels = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [hotels, setHotels] = useState([]);
-  const [searchTerm] = useOutletContext(); 
+  
+  // LA SEULE LIGNE CHANGÉE POUR ÉVITER LE CRASH
+  const context = useOutletContext() || [""]; 
+  const searchTerm = context[0] || ""; 
   
   const [formData, setFormData] = useState({
     name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null
   });
 
-  // Charger les hôtels depuis Render
   const fetchHotels = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -32,7 +33,6 @@ const Hotels = () => {
 
   useEffect(() => { fetchHotels(); }, []);
 
-  // Supprimer un hôtel
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer cet hôtel ?")) {
       try {
@@ -67,7 +67,6 @@ const Hotels = () => {
     setFormData({ name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null });
   };
 
-  // Créer ou Modifier un hôtel
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
@@ -103,8 +102,8 @@ const Hotels = () => {
   };
 
   const filteredHotels = hotels.filter(hotel => 
-    hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    hotel.address.toLowerCase().includes(searchTerm.toLowerCase())
+    (hotel.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (hotel.address?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
   return (
