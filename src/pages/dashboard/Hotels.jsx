@@ -3,23 +3,21 @@ import { useOutletContext } from 'react-router-dom';
 import axios from 'axios';
 import { Plus, Image as ImageIcon, X } from 'lucide-react';
 import HotelCard from '../../components/HotelCard';
-import toast from 'react-hot-toast'; // Importation pour les notifications
 
+// URL de ton backend sur Render
 const BASE_URL = "https://hotel-management-backend-ommj.onrender.com";
 
 const Hotels = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [hotels, setHotels] = useState([]);
-  
-  // SÉCURITÉ : On récupère le contexte et on s'assure que searchTerm est au moins une chaîne vide
-  const context = useOutletContext();
-  const searchTerm = context && context[0] ? context[0] : ""; 
+  const [searchTerm] = useOutletContext(); 
   
   const [formData, setFormData] = useState({
     name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null
   });
 
+  // Charger les hôtels depuis Render
   const fetchHotels = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -29,24 +27,22 @@ const Hotels = () => {
       setHotels(response.data);
     } catch (error) {
       console.error("Erreur chargement hôtels:", error);
-      toast.error("Impossible de charger les hôtels.");
     }
   };
 
   useEffect(() => { fetchHotels(); }, []);
 
+  // Supprimer un hôtel
   const handleDelete = async (id) => {
     if (window.confirm("Voulez-vous vraiment supprimer cet hôtel ?")) {
-      const t = toast.loading("Suppression en cours...");
       try {
         const token = localStorage.getItem('token');
         await axios.delete(`${BASE_URL}/api/hotels/${id}/`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
-        toast.success("Hôtel supprimé !", { id: t });
         fetchHotels();
       } catch (error) {
-        toast.error("Erreur lors de la suppression.", { id: t });
+        alert("Erreur lors de la suppression.");
       }
     }
   };
@@ -71,9 +67,9 @@ const Hotels = () => {
     setFormData({ name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null });
   };
 
+  // Créer ou Modifier un hôtel
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const t = toast.loading(editingId ? "Mise à jour..." : "Création...");
     const token = localStorage.getItem('token');
     const data = new FormData();
     data.append('name', formData.name);
@@ -94,35 +90,28 @@ const Hotels = () => {
 
       if (editingId) {
         await axios.patch(`${BASE_URL}/api/hotels/${editingId}/`, data, config);
-        toast.success("Hôtel mis à jour !", { id: t });
+        alert("Hôtel mis à jour !");
       } else {
         await axios.post(`${BASE_URL}/api/hotels/`, data, config);
-        toast.success("Hôtel créé avec succès !", { id: t });
+        alert("Hôtel créé !");
       }
       closeAndReset();
       fetchHotels();
     } catch (error) { 
-      toast.error("Erreur lors de l'enregistrement.", { id: t }); 
+      alert("Erreur lors de l'enregistrement."); 
     }
   };
 
-  // FILTRAGE SÉCURISÉ : On vérifie que searchTerm existe avant de transformer en minuscule
-  const filteredHotels = hotels.filter(hotel => {
-    const s = searchTerm ? searchTerm.toLowerCase() : "";
-    return (
-      (hotel.name && hotel.name.toLowerCase().includes(s)) ||
-      (hotel.address && hotel.address.toLowerCase().includes(s))
-    );
-  });
+  const filteredHotels = hotels.filter(hotel => 
+    hotel.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    hotel.address.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
         <h2 className="text-xl font-medium">Hôtels <span className="text-gray-400 ml-2">{filteredHotels.length}</span></h2>
-        <button 
-          onClick={() => { setEditingId(null); setModalOpen(true); }} 
-          className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 active:scale-95 transition-transform"
-        >
+        <button onClick={() => { setEditingId(null); setModalOpen(true); }} className="flex items-center gap-2 border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50">
           <Plus size={18} /> Créer un nouveau hôtel
         </button>
       </div>
@@ -154,22 +143,22 @@ const Hotels = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Nom de l'hôtel</label>
-                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required placeholder="Le Grand Hotel" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">Adresse</label>
-                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} required />
+                  <input type="text" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.address} onChange={(e) => setFormData({...formData, address: e.target.value})} required placeholder="Dakar, Plateau" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700">E-mail</label>
-                  <input type="email" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required />
+                  <input type="email" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required placeholder="hotel@mail.com" />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">Téléphone</label>
-                  <input type="tel" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required />
+                  <label className="text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                  <input type="tel" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required placeholder="+221 ..." />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">Prix</label>
+                  <label className="text-sm font-medium text-gray-700">Prix par nuit</label>
                   <input type="number" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500" value={formData.price_per_night} onChange={(e) => setFormData({...formData, price_per_night: e.target.value})} required />
                 </div>
                 <div className="space-y-1">
@@ -187,7 +176,7 @@ const Hotels = () => {
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 flex flex-col items-center justify-center hover:border-gray-400 transition-colors cursor-pointer relative">
                   <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={(e) => setFormData({...formData, image: e.target.files[0]})} />
                   <ImageIcon className="text-gray-400 mb-2" size={32} />
-                  <p className="text-sm text-gray-500 text-center">{formData.image ? formData.image.name : "Cliquez pour ajouter une image"}</p>
+                  <p className="text-sm text-gray-500">{formData.image ? formData.image.name : "Cliquez pour ajouter une image"}</p>
                 </div>
               </div>
 
@@ -195,7 +184,7 @@ const Hotels = () => {
                 <button type="button" onClick={closeAndReset} className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
                   Annuler
                 </button>
-                <button type="submit" className="px-6 py-2.5 bg-[#45484B] text-white rounded-lg font-medium hover:bg-black active:scale-95 transition-all">
+                <button type="submit" className="px-6 py-2.5 bg-[#45484B] text-white rounded-lg font-medium hover:bg-black transition-colors">
                   {editingId ? "Modifier" : "Enregistrer"}
                 </button>
               </div>
