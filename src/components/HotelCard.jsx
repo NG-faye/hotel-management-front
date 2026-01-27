@@ -7,9 +7,9 @@ const HotelCard = ({ image, address, name, price_per_night, onEdit, onDelete }) 
 
   // CORRECTION : On s'assure qu'il y a toujours un "/" entre l'URL et le chemin de l'image
   // et on nettoie les doubles slashs éventuels.
-  const imageUrl = image 
-    ? (image.startsWith('http') ? image : `${API_URL}/${image.startsWith('/') ? image.substring(1) : image}`) 
-    : fallbackImage;
+ const imageUrl = image 
+  ? (image.startsWith('http') ? image : `https://res.cloudinary.com/dvpg7vza1/${image}`) 
+  : fallbackImage;
 
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group">
