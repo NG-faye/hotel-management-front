@@ -8,10 +8,12 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false); // État pour l'œil
+  const [loading, setLoading] = useState(false); // AJOUT DE L'ÉTAT LOADING
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true); // ON ACTIVE LE CHARGEMENT
     try {
       // On utilise l'email comme username pour Django
       await axios.post('https://hotel-management-backend-ommj.onrender.com/api/register/', {
@@ -25,12 +27,13 @@ const Register = () => {
       navigate('/login');
     } catch (error) {
       console.error(error);
-      // Correction ici : on affiche l'erreur réelle envoyée par le serveur
       if (error.response && error.response.data) {
         alert("Erreur : " + JSON.stringify(error.response.data));
       } else {
         alert("Erreur lors de l'inscription.");
       }
+    } finally {
+      setLoading(false); // ON DÉSACTIVE LE CHARGEMENT QUOI QU'IL ARRIVE
     }
   };
 
@@ -76,7 +79,7 @@ const Register = () => {
           {/* CHAMP MOT DE PASSE AVEC TON OEIL REPLACÉ */}
           <div className="relative border-b border-gray-300">
             <input 
-              type={showPassword ? "text" : "password"} // Bascule entre texte et mot de passe
+              type={showPassword ? "text" : "password"} 
               id="password"
               className="peer w-full py-2 outline-none text-sm text-gray-800 bg-transparent placeholder-transparent" 
               placeholder="Mot de passe"
@@ -87,7 +90,6 @@ const Register = () => {
             <label htmlFor="password" className="absolute left-0 -top-3.5 text-gray-400 text-xs transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-400 peer-focus:text-xs pointer-events-none">
               Mot de passe
             </label>
-            {/* L'icône de l'oeil à droite */}
             <div 
               className="absolute right-0 top-2 cursor-pointer text-gray-500"
               onClick={() => setShowPassword(!showPassword)}
@@ -103,8 +105,15 @@ const Register = () => {
             </label>
           </div>
 
-          <button type="submit" className="w-full bg-[#45484B] text-white py-4 rounded-sm font-bold text-lg hover:bg-black transition-all">
-            S'inscrire
+          {/* BOUTON AVEC ÉTAT DE CHARGEMENT */}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className={`w-full text-white py-4 rounded-sm font-bold text-lg transition-all ${
+              loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#45484B] hover:bg-black'
+            }`}
+          >
+            {loading ? "Inscription en cours..." : "S'inscrire"}
           </button>
         </form>
       </div>

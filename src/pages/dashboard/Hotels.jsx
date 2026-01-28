@@ -10,7 +10,8 @@ const Hotels = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [hotels, setHotels] = useState([]);
-  
+  const [loading, setLoading] = useState(false); // AJOUT DU LOADING
+
   // LA SEULE LIGNE CHANGÉE POUR ÉVITER LE CRASH
   const context = useOutletContext() || [""]; 
   const searchTerm = context[0] || ""; 
@@ -65,10 +66,12 @@ const Hotels = () => {
     setModalOpen(false);
     setEditingId(null);
     setFormData({ name: '', address: '', email: '', phone: '', price_per_night: '', currency: 'XOF', image: null });
+    setLoading(false); // Reset loading
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // DÉMARRAGE DU CHARGEMENT
     const token = localStorage.getItem('token');
     const data = new FormData();
     data.append('name', formData.name);
@@ -98,6 +101,8 @@ const Hotels = () => {
       fetchHotels();
     } catch (error) { 
       alert("Erreur lors de l'enregistrement."); 
+    } finally {
+      setLoading(false); // ARRÊT DU CHARGEMENT
     }
   };
 
@@ -183,8 +188,12 @@ const Hotels = () => {
                 <button type="button" onClick={closeAndReset} className="px-6 py-2.5 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
                   Annuler
                 </button>
-                <button type="submit" className="px-6 py-2.5 bg-[#45484B] text-white rounded-lg font-medium hover:bg-black transition-colors">
-                  {editingId ? "Modifier" : "Enregistrer"}
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className={`px-6 py-2.5 text-white rounded-lg font-medium transition-all ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#45484B] hover:bg-black'}`}
+                >
+                  {loading ? "Enregistrement..." : (editingId ? "Modifier" : "Enregistrer")}
                 </button>
               </div>
             </form>
