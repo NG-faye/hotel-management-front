@@ -16,12 +16,13 @@ const Register = () => {
     setLoading(true); // ON ACTIVE LE CHARGEMENT
     try {
       // On utilise l'email comme username pour Django
-      await axios.post('https://hotel-management-backend-ommj.onrender.com/api/register/', {
-        username: email,
-        email: email,
-        password: password,
-        first_name: name,
-      });
+      // Dans handleRegister, change l'URL :
+await axios.post('https://hotel-management-backend-ommj.onrender.com/auth/users/', {
+  email: email,
+  username: email, // Djoser crée souvent l'user avec le username
+  password: password,
+  first_name: name,
+});
 
       alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
       navigate('/login');

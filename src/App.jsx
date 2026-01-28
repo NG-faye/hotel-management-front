@@ -5,6 +5,7 @@ import DashboardLayout from './layouts/DashboardLayout';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetPasswordConfirm from './pages/auth/ResetPasswordConfirm';
 import Dashboard from './pages/dashboard/Dashboard';
 import Hotels from './pages/dashboard/Hotels';
 import PrivateRoute from './components/PrivateRoute';
@@ -21,6 +22,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/password-reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
           </Route>
 
           <Route 
