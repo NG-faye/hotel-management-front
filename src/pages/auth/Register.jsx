@@ -21,6 +21,7 @@ await axios.post('https://hotel-management-backend-ommj.onrender.com/auth/users/
   email: email,
   username: email, // Djoser crée souvent l'user avec le username
   password: password,
+  re_password: password,
   first_name: name,
 });
 
