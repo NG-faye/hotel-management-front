@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ActivationPage from './pages//auth/ActivationPage';
 import { Toaster } from 'react-hot-toast'; // IMPORTATION ICI
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -23,6 +24,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/password-reset/confirm/:uid/:token" element={<ResetPasswordConfirm />} />
+            <Route path="/activate/:uid/:token" element={<ActivationPage />} />
           </Route>
 
           <Route 
