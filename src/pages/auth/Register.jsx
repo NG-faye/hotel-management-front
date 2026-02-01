@@ -17,9 +17,11 @@ const Register = () => {
     try {
       // On utilise l'email comme username pour Django
       // Dans handleRegister, change l'URL :
-await axios.post('https://hotel-management-backend-ommj.onrender.com/auth/users/', {
+// Dans ton fichier Register.jsx, modifie seulement la ligne de l'axios.post :
+
+await axios.post('https://hotel-management-backend-ommj.onrender.com/api/register/', {
   email: email,
-  username: email, // Djoser crée souvent l'user avec le username
+  username: email, 
   password: password,
   re_password: password,
   first_name: name,
