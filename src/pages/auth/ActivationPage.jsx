@@ -11,7 +11,7 @@ const ActivationPage = () => {
         const verifyAccount = async () => {
             try {
                 // Remplace par ton URL Render réelle
-                await axios.post('https://ton-backend.onrender.com/auth/users/activation/', {
+               await axios.post('https://hotel-management-backend-ommj.onrender.com/auth/users/activation/', {
                     uid,
                     token
                 });

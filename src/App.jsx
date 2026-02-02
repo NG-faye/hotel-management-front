@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import ActivationPage from './pages//auth/ActivationPage';
+import ActivationPage from './pages/auth/ActivationPage';
 import { Toaster } from 'react-hot-toast'; // IMPORTATION ICI
 import AuthLayout from './layouts/AuthLayout';
 import DashboardLayout from './layouts/DashboardLayout';
